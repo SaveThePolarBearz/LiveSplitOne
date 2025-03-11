@@ -4,6 +4,7 @@ import { SettingsComponent } from "./Settings";
 import { UrlCache } from "../util/UrlCache";
 import Layout from "../layout/Layout";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { LiveSplitUtils } from "./LiveSplit";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { ContextMenu, MenuItem, Separator, Position } from "./ContextMenu";
@@ -260,6 +261,7 @@ export class LayoutEditor extends React.Component<Props, State> {
     private selectComponent(i: number) {
         this.props.editor.select(i);
         this.update(true);
+		LiveSplitUtils.forceResize();
     }
 
     private addComponent(componentClass: any) {

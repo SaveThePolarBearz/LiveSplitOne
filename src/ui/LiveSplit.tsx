@@ -107,8 +107,40 @@ export interface State {
 }
 
 export let hotkeySystem: Option<HotkeyImplementation> = null;
+export class LiveSplitUtils {
+	private static liveSplitInstance: LiveSplit | null = null;
+
+    static setInstance(instance: LiveSplit) {
+        LiveSplitUtils.liveSplitInstance = instance;
+    }
+
+    static forceResize() {
+        if (LiveSplitUtils.liveSplitInstance) {
+            LiveSplitUtils.liveSplitInstance.forceResize();
+        } else {
+            console.error("LiveSplit instance not set.");
+        }
+    }
+}
 
 export class LiveSplit extends React.Component<Props, State> {
+	public forceResize()
+	{		
+		const layout = document.querySelector(".layout");
+		if (!layout) {
+			console.error("Layout element not found!");
+			return;
+		}
+
+		if (layout instanceof HTMLElement) {
+			this.onResize(layout.offsetWidth + 1, layout.offsetHeight)
+
+			requestAnimationFrame(() => {
+				this.onResize(layout.offsetWidth - 1, layout.offsetHeight);
+			});
+		}
+	}
+	
     public static async loadStoredData() {
         // FIXME: We should probably request all of these concurrently.
         const splitsKey = await Storage.loadSplitsKey();
@@ -191,8 +223,8 @@ export class LiveSplit extends React.Component<Props, State> {
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
-        const renderer = new WebRenderer();
-        renderer.element().setAttribute("style", "width: inherit; height: inherit;");
+		const renderer = new WebRenderer();
+		renderer.element().setAttribute("style", "width: inherit; height: inherit;");
 
         this.state = {
             isDesktop: isDesktop && !isBrowserSource,
@@ -252,6 +284,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public componentDidMount() {
+		LiveSplitUtils.setInstance(this);
         this.scrollEvent = { handleEvent: (e: WheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
@@ -457,7 +490,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private changeMenu(menu: Menu, closeSidebar: boolean = true) {
-        const wasLocked = isMenuLocked(this.state.menu.kind);
+		const wasLocked = isMenuLocked(this.state.menu.kind);
         const isLocked = isMenuLocked(menu.kind);
 
         this.setState({ menu });
@@ -470,6 +503,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (wasLocked && !isLocked) {
             this.unlockTimerInteraction();
         }
+		requestAnimationFrame(() => this.forceResize());
     }
 
     public openTimerView() {
@@ -533,6 +567,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
+		this.forceResize();
     }
 
     public async importLayout() {
@@ -550,6 +585,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } catch (err) {
             toast.error((err as Error).message);
         }
+		this.forceResize();
     }
 
     public async importLayoutFromFile(file: File) {
@@ -896,6 +932,7 @@ export class LiveSplit extends React.Component<Props, State> {
         if (this.state.serverConnection != null) {
             this.state.serverConnection.sendEvent(event);
         }
+		this.forceResize();
     }
 
     runChanged(): void {
@@ -963,6 +1000,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 currentPhase: this.state.commandSink.currentPhase(),
             });
         }
+		this.forceResize();
     }
 
     private currentSplitChanged(): void {
@@ -972,7 +1010,7 @@ export class LiveSplit extends React.Component<Props, State> {
             });
         }
     }
-
+	
     private comparisonListChanged(): void {
         if (this.state != null) {
             this.setState({
