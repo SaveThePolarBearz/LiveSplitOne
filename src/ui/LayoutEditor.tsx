@@ -180,6 +180,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 this.setState({
                                     showComponentSettings: false,
                                 });
+								LiveSplitUtils.forceResize();
                             }}
                         >
                             Layout
@@ -194,6 +195,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 this.setState({
                                     showComponentSettings: true,
                                 });
+								LiveSplitUtils.forceResize();
                             }}
                         >
                             Component
