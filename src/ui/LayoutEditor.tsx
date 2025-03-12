@@ -150,14 +150,20 @@ export class LayoutEditor extends React.Component<Props, State> {
                             </button>
                             <button
                                 aria-label="Move Component Up"
-                                onClick={(_) => this.moveComponentUp()}
+                                onClick={(_) => {
+									this.moveComponentUp();
+									LiveSplitUtils.forceResize();
+								}}
                                 disabled={!this.state.editor.buttons.can_move_up}
                             >
                                 <i className="fa fa-arrow-up" aria-hidden="true"></i>
                             </button>
                             <button
                                 aria-label="Move Component Down"
-                                onClick={(_) => this.moveComponentDown()}
+                                onClick={(_) => {
+									this.moveComponentDown()
+									LiveSplitUtils.forceResize();
+								}}
                                 disabled={!this.state.editor.buttons.can_move_down}
                             >
                                 <i className="fa fa-arrow-down" aria-hidden="true"></i>
