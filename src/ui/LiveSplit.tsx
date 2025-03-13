@@ -124,21 +124,28 @@ export class LiveSplitUtils {
 }
 
 export class LiveSplit extends React.Component<Props, State> {
-	public forceResize()
-	{		
+	private originalWidth: number = -1;
+	private timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+	public forceResize() {
 		const layout = document.querySelector(".layout");
-		if (!layout) {
+ 
+		if (!layout || !(layout instanceof HTMLElement)) {
 			console.error("Layout element not found!");
 			return;
 		}
 
-		if (layout instanceof HTMLElement) {
-			this.onResize(layout.offsetWidth + 1, layout.offsetHeight)
+		this.updateSize(layout.offsetWidth + 1, layout.offsetHeight);
 
-			requestAnimationFrame(() => {
-				this.onResize(layout.offsetWidth - 1, layout.offsetHeight);
-			});
+		if (this.timeoutId) {
+			clearTimeout(this.timeoutId);
 		}
+	
+		// Start a new timeout
+		this.timeoutId = setTimeout(() => {
+			this.updateSize(this.originalWidth, layout.offsetHeight);
+			this.timeoutId = null; // Clear the reference once it runs
+		}, 100);
 	}
 	
     public static async loadStoredData() {
@@ -443,6 +450,17 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutModified={this.state.layoutModified}
             />;
         }
+		console.log("render");
+		if (this.originalWidth === -1)
+		{
+			setTimeout(() => {
+				const layoutElement = document.querySelector(".layout");
+				if (layoutElement && layoutElement instanceof HTMLElement) {
+					this.originalWidth = layoutElement.offsetWidth;
+					console.log(this.originalWidth + " set the original width from render");
+				}
+			}, 100);
+		}
 
         return <>
             {view}
@@ -713,8 +731,8 @@ export class LiveSplit extends React.Component<Props, State> {
         });
     }
 
-    public onResize(width: number, height: number) {
-        this.setState(
+	public updateSize(width: number, height: number) {
+		this.setState(
             {
                 layoutWidth: width,
                 layoutHeight: height,
@@ -724,6 +742,12 @@ export class LiveSplit extends React.Component<Props, State> {
             },
             () => this.updateBadge(),
         );
+	}
+
+    public onResize(width: number, height: number) {
+		console.log("onResize");
+		this.originalWidth = width;
+		this.updateSize(width, height);
     }
 
     private getDefaultRun() {

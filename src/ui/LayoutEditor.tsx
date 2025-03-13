@@ -104,6 +104,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                     setValue={(index, value) => {
                         this.props.editor.setComponentSettingsValue(index, value);
                         this.update();
+						LiveSplitUtils.forceResize();
                     }}
                 />
             ) : (
@@ -121,6 +122,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                             this.props.layoutEditorUrlCache.imageCache,
                         );
                         this.update();
+						LiveSplitUtils.forceResize();
                     }}
                 />
             );
