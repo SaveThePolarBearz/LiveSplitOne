@@ -9,21 +9,6 @@
   @include Table.table;
   @include Toggle.toggle;
 
-  select {
-	font-size: 15px;
-	border: 1px solid #404040;
-	color: #fff;
-	text-overflow: ellipsis;
-	font-family: inherit;
-	background: #0b0b0b url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,4 2,4 5,7 8,4 10,4 5,9' fill='%23fff'/%3E%3C/svg%3E") no-repeat right 10px center;
-    background-size: 12px;
-	padding-left: 8px;
-    padding-right: 30px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-  }
-
   .layout-editor-inner {
     width: variables.$settings-table-width;
     display: inline-flex;
