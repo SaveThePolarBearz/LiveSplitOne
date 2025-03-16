@@ -450,7 +450,6 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutModified={this.state.layoutModified}
             />;
         }
-		console.log("render");
 		if (this.originalWidth === -1)
 		{
 			setTimeout(() => {
@@ -580,7 +579,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layout,
                 this.state.storedLayoutWidth,
                 this.state.storedLayoutHeight,
-            );
+			);
             this.setState({ layoutModified: false }, () => this.updateBadge());
         } catch (_) {
             toast.error("Failed to save the layout.");
@@ -603,7 +602,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } catch (err) {
             toast.error((err as Error).message);
         }
-		this.forceResize();
+		requestAnimationFrame(() => this.forceResize());
     }
 
     public async importLayoutFromFile(file: File) {
@@ -624,6 +623,7 @@ export class LiveSplit extends React.Component<Props, State> {
     public loadDefaultLayout() {
         const layout = Layout.defaultLayout();
         this.setLayout(layout);
+        requestAnimationFrame(() => this.forceResize());
     }
 
     public openRunEditor({ splitsKey, run }: EditingInfo) {
